@@ -14,7 +14,7 @@
 #   limitations under the License.                                              #
 #################################################################################
 """A class for Gym Environment."""
-from typing import Optional, List, Tuple, Union, Any
+from typing import Optional, List, Tuple, Union, Any, Iterable
 
 from ude import (
     UDEEnvironment,
@@ -42,7 +42,8 @@ class GymEnv(SideChannelObserverInterface):
                  port: Optional[int] = None,
                  options: Optional[List[Tuple[str, Any]]] = None,
                  compression: Compression = Compression.NoCompression,
-                 credentials: Optional[ServerCredentials] = None,
+                 credentials: Optional[Union[ServerCredentials, Iterable[str], Iterable[bytes]]] = None,
+                 auth_key: Optional[str] = None,
                  timeout_wait: Union[int, float] = 60.0,
                  **kwargs):
         """
@@ -58,8 +59,10 @@ class GymEnv(SideChannelObserverInterface):
                                                         (:term:`channel_arguments` in gRPC runtime)
                                                         to configure the channel.
             compression (Compression) = channel compression type (default: NoCompression)
-            credentials (Optional[ServerCredentials]): grpc.ServerCredentials to use with
-                                                                an SSL-enabled grpc Server.
+            credentials (Optional[Union[ServerCredentials, Iterable[str], Iterable[bytes]]]): grpc.ServerCredentials,
+                the path to certificate private key and body/chain file, or bytes of the certificate private
+                key and body/chain to use with an SSL-enabled Channel.
+            auth_key (Optional[str]): channel authentication key (only applied when credentials are provided).
             timeout_wait (Union[int, float]): the maximum wait time to respond step request to UDE clients.
             kwargs: Arbitrary keyword arguments for grpc.server
         """
@@ -77,6 +80,7 @@ class GymEnv(SideChannelObserverInterface):
                                      options=options,
                                      compression=compression,
                                      credentials=credentials,
+                                     auth_key=auth_key,
                                      timeout_wait=timeout_wait,
                                      **kwargs)
         self._adapter.side_channel.register(self)
