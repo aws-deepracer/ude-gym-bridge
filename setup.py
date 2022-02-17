@@ -38,6 +38,9 @@ required_packages = [
     "setuptools",
     "gym>=0.18.0",
     'mujoco_py>=1.50.1.68',
+]
+
+test_required_packages = [
     "flake8>=3.5,<4.0.0",
     "pytest-flake8==1.0.7",
     "pytest-pep257==0.0.5",
@@ -62,8 +65,10 @@ setup_args = {
         "License :: OSI Approved :: Apache Software License",
         "Programming Language :: Python",
         "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3.9",
     ],
     "install_requires": required_packages,
+    "tests_require": test_required_packages,
 }
 
 setup(**setup_args)
