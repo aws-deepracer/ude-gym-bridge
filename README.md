@@ -1,6 +1,6 @@
 ## UDE Gym Bridge
 
-The UDE Gym Bridge package is a bridge implementation of Unified Distributed Environment (UDE) to provide the integration between UDE and OpenAI Gym. 
+The UDE Gym Bridge package is a bridge implementation of the Unified Distributed Environment (UDE). It provides the integration between UDE and OpenAI Gym. 
 
 ## Installation
 
