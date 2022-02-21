@@ -4,7 +4,7 @@ The UDE Gym Bridge package is a bridge implementation of the Unified Distributed
 
 ## Installation
 
-To install UDE Gym Bridge, use `pip install ude-gym-bridge`.
+To install UDE Gym Bridge, run the `pip install ude-gym-bridge` command.
 
 Python 3.6, 3.7, 3.8, and 3.9 are supported on Linux, Windows, and macOS.
 
