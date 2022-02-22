@@ -37,7 +37,8 @@ package_name = "ude-gym-bridge"
 required_packages = [
     "setuptools",
     "gym>=0.18.0",
-    'mujoco_py>=1.50.1.68',
+    "mujoco_py>=1.50.1.68",
+    "ude>=0.1.0"
 ]
 
 test_required_packages = [
@@ -54,6 +55,7 @@ setup_args = {
     "package_dir": {"": "."},
     "description": "Open source library to bridge UDE and OpenAI Gym.",
     "long_description": read("README.md"),
+    "long_description_content_type": 'text/markdown',
     "author": "Amazon Web Services",
     "url": "https://github.com/aws-deepracer/ude-gym-bridge/",
     "license": "Apache License 2.0",
@@ -64,6 +66,8 @@ setup_args = {
         "Natural Language :: English",
         "License :: OSI Approved :: Apache Software License",
         "Programming Language :: Python",
+        "Programming Language :: Python :: 3.6",
+        "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
     ],
