@@ -38,7 +38,7 @@ required_packages = [
     "setuptools",
     "gym>=0.18.0",
     "mujoco_py>=1.50.1.68",
-    "ude>=0.1.0"
+    "ude>=0.1.1"
 ]
 
 test_required_packages = [

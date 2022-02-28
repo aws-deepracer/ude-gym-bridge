@@ -99,7 +99,8 @@ class GymEnvironmentAdapterTest(TestCase):
         ret_reset_val = gym_env_adapter.reset()
 
         expected_return = (
-            {agent_name: next_state}
+            {agent_name: next_state},
+            {}
         )
         assert ret_reset_val == expected_return
         assert gym_env_mock.return_value.reset.call_count == 2

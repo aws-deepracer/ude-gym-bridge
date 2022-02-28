@@ -21,7 +21,7 @@ from gym import Space
 
 from ude import (
     UDEEnvironmentAdapterInterface,
-    MultiAgentDict, UDEStepResult,
+    MultiAgentDict, UDEStepResult, UDEResetResult,
     AbstractSideChannel, SingleSideChannel, AgentID
 )
 import gym
@@ -94,13 +94,13 @@ class GymEnvironmentAdapter(UDEEnvironmentAdapterInterface):
             return ({self._agent_name: obs}, {self._agent_name: reward}, {self._agent_name: done},
                     {self._agent_name: action}, info)
 
-    def reset(self) -> MultiAgentDict:
+    def reset(self) -> UDEResetResult:
         """
         Reset the environment and start new episode.
         Also, returns the first observation for new episode started.
 
         Returns:
-            MultiAgentDict: first observation in new episode.
+            UDEResetResult: first observation and info in new episode.
         """
         with self._lock:
             # If there is new environment to replace, replace it during reset.
@@ -112,7 +112,7 @@ class GymEnvironmentAdapter(UDEEnvironmentAdapterInterface):
             obs = self._env.reset()
             if self._render:
                 self._env.render()
-            return {self._agent_name: obs}
+            return {self._agent_name: obs}, {}
 
     def close(self) -> None:
         """
