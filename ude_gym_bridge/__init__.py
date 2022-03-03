@@ -13,4 +13,5 @@
 #   See the License for the specific language governing permissions and         #
 #   limitations under the License.                                              #
 #################################################################################
-from ude_gym_bridge.gym_env import GymEnv
+from ude_gym_bridge.gym_env_remote_runner import GymEnvRemoteRunner
+from ude_gym_bridge.gym_environment_adapter import GymEnvironmentAdapter

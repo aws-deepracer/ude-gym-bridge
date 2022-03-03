@@ -18,18 +18,14 @@ from typing import Optional, List, Tuple, Union, Any, Iterable
 
 from ude import (
     UDEEnvironment,
-    SideChannelObserverInterface, SideChannelData,
-    AbstractSideChannel,
     UDEServer,
     UDEStepInvokeType,
     Compression, ServerCredentials
 )
 from ude_gym_bridge.gym_environment_adapter import GymEnvironmentAdapter
 
-import gym
 
-
-class GymEnv(SideChannelObserverInterface):
+class GymEnvRemoteRunner(object):
     """
     Gym Environment
     """
@@ -51,7 +47,7 @@ class GymEnv(SideChannelObserverInterface):
         Args:
             env_name (str): OpenAI Gym Environment name.
             agent_name (str): Name of agent to use.
-            render (bool): the flag to render OpenAI gym environment or not.
+            render (bool): the flag to render OpenAI Gym environment or not.
             step_invoke_type (const.UDEStepInvokeType):  step invoke type (WAIT_FOREVER vs PERIODIC)
             step_invoke_period (Union[int, float]): step invoke period (used only with PERIODIC step_invoke_type)
             port (Optional[int]): Port to use for UDE Server (default: 3003)
@@ -66,13 +62,10 @@ class GymEnv(SideChannelObserverInterface):
             timeout_wait (Union[int, float]): the maximum wait time to respond step request to UDE clients.
             kwargs: Arbitrary keyword arguments for grpc.server
         """
-        env = gym.make(env_name)
-        self._adapter = GymEnvironmentAdapter(gym_env=env,
+        self._adapter = GymEnvironmentAdapter(env_name=env_name,
                                               agent_name=agent_name,
                                               render=render)
         self._ude_env = UDEEnvironment(ude_env_adapter=self._adapter)
-        all_envs = gym.envs.registry.all()
-        self._env_ids = [env_spec.id for env_spec in all_envs]
         self._ude_server = UDEServer(ude_env=self._ude_env,
                                      step_invoke_type=step_invoke_type,
                                      step_invoke_period=step_invoke_period,
@@ -83,8 +76,6 @@ class GymEnv(SideChannelObserverInterface):
                                      auth_key=auth_key,
                                      timeout_wait=timeout_wait,
                                      **kwargs)
-        self._adapter.side_channel.register(self)
-        # self._ude_server.side_channel.register(self)
 
     def start(self) -> None:
         """
@@ -104,24 +95,9 @@ class GymEnv(SideChannelObserverInterface):
         """
         self._ude_server.spin()
 
-    def on_received(self, side_channel: AbstractSideChannel, key: str, value: SideChannelData) -> None:
-        """
-        Callback when side channel instance receives new message.
-
-        Args:
-            side_channel (AbstractSideChannel): side channel instance
-            key (str): The string identifier of message
-            value (SideChannelData): The data of the message.
-        """
-        print("key: ", key, " value: ", value)
-        if key == "env":
-            if value in self._env_ids:
-                new_env = gym.make(value)
-                self._adapter.env = new_env
-
 
 def main():
-    gym_env = GymEnv()
+    gym_env = GymEnvRemoteRunner()
     gym_env.start()
     gym_env.spin()
 

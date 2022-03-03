@@ -22,57 +22,77 @@ from gym import Space
 from ude import (
     UDEEnvironmentAdapterInterface,
     MultiAgentDict, UDEStepResult, UDEResetResult,
-    AbstractSideChannel, SingleSideChannel, AgentID
+    AbstractSideChannel, SingleSideChannel, AgentID,
+    SideChannelData, SideChannelObserverInterface
 )
 import gym
 
 
-class GymEnvironmentAdapter(UDEEnvironmentAdapterInterface):
+class GymEnvironmentAdapter(UDEEnvironmentAdapterInterface,
+                            SideChannelObserverInterface):
     """
-    GymEnvironmentAdapter class to interface gym environment to UDE Environment.
+    GymEnvironmentAdapter class to interface Gym environment to UDE Environment.
     """
-    def __init__(self, gym_env: gym.Env,
+    def __init__(self,
+                 env_name: str = "CartPole-v0",
                  agent_name: str = "agent0",
                  render: bool = False):
         """
         Initialize GymEnvironmentAdapter
 
         Args:
-            gym_env (gym.Env): OpenAI Gym environment instance
+            env_name (str): OpenAI Gym environment name.
             agent_name (str): Name of agent to use.
-            render (bool): the flag to render OpenAI gym environment or not.
+            render (bool): the flag to render OpenAI Gym environment or not.
         """
         super().__init__()
-        self._env = gym_env
+        self._env_name = env_name
+        self._env = gym.make(env_name)
         self._env.reset()
         self._new_env = None
+        self._new_env_name = None
 
         self._render = render
 
+        all_envs = gym.envs.registry.all()
+        self._env_ids = [env_spec.id for env_spec in all_envs]
+
         self._side_channel = SingleSideChannel()
+        self._side_channel.register(self)
         self._agent_name = agent_name or "agent0"
         self._lock = RLock()
 
     @property
     def env(self) -> gym.Env:
         """
-        Returns the current OpenAI gym environment.
+        Returns the current OpenAI Gym environment.
 
         Returns:
-            gym.Env: the current OpenAI gym environment.
+            gym.Env: the current OpenAI Gym environment.
         """
         with self._lock:
             return self._env
 
-    @env.setter
-    def env(self, value: gym.Env) -> None:
+    @property
+    def env_name(self) -> str:
         """
-        Sets new OpenAI gym environment.
+        Returns the current OpenAI Gym environment name.
+
+        Returns:
+            gym.Env: the current OpenAI Gym environment name.
+        """
+        return self._env_name
+
+    @env_name.setter
+    def env_name(self, value: str) -> None:
+        """
+        Sets new OpenAI Gym environment.
 
         Args:
-            value (gym.Env): new OpenAI gym environment to use.
+            value (str): new OpenAI Gym environment name.
         """
-        self._new_env = value
+        self._new_env = gym.make(value)
+        self._new_env_name = value
 
     def step(self, action_dict: MultiAgentDict) -> UDEStepResult:
         """
@@ -108,7 +128,9 @@ class GymEnvironmentAdapter(UDEEnvironmentAdapterInterface):
                 if self._env:
                     self._env.close()
                 self._env = self._new_env
+                self._env_name = self._new_env_name
                 self._new_env = None
+                self._new_env_name = None
             obs = self._env.reset()
             if self._render:
                 self._env.render()
@@ -154,3 +176,19 @@ class GymEnvironmentAdapter(UDEEnvironmentAdapterInterface):
             AbstractSideChannel: the instance of side channel.
         """
         return self._side_channel
+
+    def on_received(self, side_channel: AbstractSideChannel, key: str, value: SideChannelData) -> None:
+        """
+        Callback when side channel instance receives new message.
+
+        Args:
+            side_channel (AbstractSideChannel): side channel instance
+            key (str): The string identifier of message
+            value (SideChannelData): The data of the message.
+        """
+        print("key: ", key, " value: ", value)
+        if key == "env":
+            if value in self._env_ids:
+                new_env = gym.make(value)
+                self._new_env_name = value
+                self._new_env = new_env
