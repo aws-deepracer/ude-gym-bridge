@@ -8,6 +8,10 @@ To install UDE Gym Bridge, run the `pip install ude-gym-bridge` command.
 
 Python 3.6, 3.7, 3.8, and 3.9 are supported on Linux, Windows, and macOS.
 
+## Usage Examples
+
+For a sample UDE example with OpenAI gym environments [Sample](https://github.com/aws-deepracer/ude-gym-bridge/blob/main/examples/README.md)
+
 ## Citation
 
 UDE whitepaper is available at https://arxiv.org/abs/2205.06946.
