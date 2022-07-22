@@ -1,3 +1,5 @@
+## We have made a difficult decision of ceasing active development on this repo as of Jul 2022.
+
 ## UDE Gym Bridge
 
 The UDE Gym Bridge package is a bridge implementation of the Unified Distributed Environment (UDE). It provides integration between UDE and OpenAI Gym. 
